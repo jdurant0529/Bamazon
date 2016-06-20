@@ -64,6 +64,7 @@ function bamazon() {
                         break;
                     case "4) Add New Product":
                         console.log('case 4');
+              
                         addNewProd();
                         break;
                 }
