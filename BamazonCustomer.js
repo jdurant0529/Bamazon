@@ -22,6 +22,7 @@ function bamazon() {
 
 
     function allProducts() {
+    	console.log('');
         con.query('SELECT * FROM products', function(err, result) {
             if (err) throw err;
 
@@ -34,7 +35,7 @@ function bamazon() {
 
             for (var i = 0; i < result.length; i++) {
 
-                console.log(result[i].ItemID + " | " + result[i].DepartmentName);
+                console.log("Item ID #" + result[i].ItemID + " | " + "Department Name: " + result[i].DepartmentName);
                 console.log(strBreak);
                 console.log("	Product             : " + result[i].ProductName);
                 console.log("	Price               : " + result[i].Price);
@@ -68,11 +69,11 @@ function bamazon() {
 
             var idx = choices.option - 1;
             var grandTotal = choices.quantity * price[idx];
-//            var cost = choices.quantity * price[idx];
+            //            var cost = choices.quantity * price[idx];
             console.log("item id: " + opt[idx]);
             console.log("quantity available: " + qty[idx]);
             console.log("quantity wanted: " + choices.quantity);
-            
+
 
             if (parseInt(choices.quantity) > parseInt(qty[idx])) {
                 console.log("You can't have that many.  Bamazon doesn't have enough available.");
@@ -82,22 +83,22 @@ function bamazon() {
 
                 // console.log('This cost a grand total of ' + cost);
                 choices.quantity = qty[idx] - choices.quantity;
-			console.log("Price of individual item: " + price[idx]);
-            console.log('Grand total of all products purchased: ' + grandTotal);
+                console.log("Price of individual item: " + price[idx]);
+                console.log('Grand total of all products purchased: ' + grandTotal);
                 purchase(choices);
             }
 
         })
 
         function purchase(choices) {
-            
-            var setStock = {StockQuantity: parseInt(choices.quantity)}
-            var itemChange = { ItemID: choices.option};
+
+            var setStock = { StockQuantity: parseInt(choices.quantity) }
+            var itemChange = { ItemID: choices.option };
 
             con.query('update products set ? where ?', [setStock, itemChange], function(err, res) {
                 if (err) throw err;
-            	console.log('Purchase Completed');
-            	con.end();
+                console.log('Purchase Completed');
+                con.end();
             })
         }
     }
