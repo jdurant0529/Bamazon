@@ -18,7 +18,6 @@ function bamazon() {
         }
         console.log('Connection established');
 
-
     }); //  end of con.connect function --- database has been connected.
 
 
@@ -31,6 +30,7 @@ function bamazon() {
             var strBreak = '------------------';
             var choiceOPT = [];
             var stockQTY = [];
+            var costPRICE = [];
 
             for (var i = 0; i < result.length; i++) {
 
@@ -42,16 +42,16 @@ function bamazon() {
                 console.log('');
                 choiceOPT.push("" + result[i].ItemID);
                 stockQTY.push("" + result[i].StockQuantity);
-
+                costPRICE.push("" + result[i].Price)
             }
 
-            selection(choiceOPT, stockQTY)
+            selection(choiceOPT, stockQTY, costPRICE)
 
         })
     } //end of allProducts function...
 
-    function selection(opt, qty) {
-    	
+    function selection(opt, qty, price) {
+
         inquirer.prompt([{
                 type: "list",
                 name: "option",
@@ -67,50 +67,39 @@ function bamazon() {
         ]).then(function(choices) {
 
             var idx = choices.option - 1;
+            var grandTotal = choices.quantity * price[idx];
+//            var cost = choices.quantity * price[idx];
             console.log("item id: " + opt[idx]);
             console.log("quantity available: " + qty[idx]);
             console.log("quantity wanted: " + choices.quantity);
+            
 
             if (parseInt(choices.quantity) > parseInt(qty[idx])) {
                 console.log("You can't have that many.  Bamazon doesn't have enough available.");
                 con.end();
             } else {
-                console.log('You have successfully purchased ' + choices.quantity + ' of item ID ' + opt[idx]);
-                choices.quantity = qty[idx] - choices.quantity;
-                
+                // console.log('You have successfully purchased ' + choices.quantity + ' of item ID ' + opt[idx] );
 
+                // console.log('This cost a grand total of ' + cost);
+                choices.quantity = qty[idx] - choices.quantity;
+			console.log("Price of individual item: " + price[idx]);
+            console.log('Grand total of all products purchased: ' + grandTotal);
                 purchase(choices);
             }
 
         })
 
         function purchase(choices) {
-            //console.log('Inside purchase function!!!');
             
             var setStock = {StockQuantity: parseInt(choices.quantity)}
             var itemChange = { ItemID: choices.option};
-            // var setStock = {StockQuantity: '10'};
-            // var itemChange = {ItemID: '1'};
 
-            // console.log(set);
-            // console.log(where);
-            // con.query('update products set StockQuantity = 10 where ItemID = 1', function(err, res){ 
-            // })
             con.query('update products set ? where ?', [setStock, itemChange], function(err, res) {
                 if (err) throw err;
-            	console.log('You have successfully purchased ' +  );
+            	console.log('Purchase Completed');
+            	con.end();
             })
         }
-
-        //     // con.query('update products set ? where ?', set, where, function(err, res) {
-        //     //         if (err) throw err;
-        //     //         console.log(res);
-
-        //     //     }) //end con.query
-        // } // end of else statement
-
-        // function purchase(selection) {
-        //     console.log(selection);
     }
     allProducts();
 }
