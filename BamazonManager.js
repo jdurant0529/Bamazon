@@ -64,8 +64,32 @@ function bamazon() {
                         break;
                     case "4) Add New Product":
                         console.log('case 4');
-              
-                        addNewProd();
+
+                        //ProductName, DepartmentName, Price, StockQuantity
+                        inquirer.prompt([{
+                                type: "input",
+                                name: "ProductName",
+                                message: "What is the name of the new item?",
+                            }, {
+
+                                type: "input",
+                                message: "What department does that item belong?",
+                                name: "DepartmentName"
+                            }, {
+                                type: "input",
+                                message: "How much do you want to charge for that item?",
+                                name: "Price"
+                            }, {
+                                type: "input",
+                                message: "How many of that item do you have in-stock?",
+                                name: "StockQuantity"
+                            }
+
+                        ]).then(function(newItem) {
+                            addNewProd(newItem);
+
+                        })
+
                         break;
                 }
             }) //end of then function for inquirer
@@ -155,8 +179,28 @@ function bamazon() {
     } // end of addtoInven function 
 
 
-    function addNewProd() {
-        console.log('inside add new');
+    function addNewProd(newItem) {
+
+        con.query('INSERT INTO products SET ?', newItem, function(err, result) {
+            if (err) throw err;
+            console.log('');
+            con.query('Select * from products where ?', { ItemID: result.insertId }, function(err, result) {
+                if (err) throw err;
+                var strBreak = '------------------';
+
+                for (var i = 0; i < result.length; i++) {
+
+                    console.log("Item ID #" + result[i].ItemID + " | " + "Department Name: " + result[i].DepartmentName);
+                    console.log(strBreak);
+                    console.log("   Product             : " + result[i].ProductName);
+                    console.log("   Price               : " + result[i].Price);
+                    console.log("   Quantity Available  : " + result[i].StockQuantity);
+                    console.log('');
+                }
+                options();
+            })
+        })
+
     }
     options();
 }
